@@ -1,0 +1,11 @@
+julia
+linux-6.3.1.tar.xz
+glibc-2.37.tar.gz
+glibc-build
+bootable_iso
+glibc-2.37
+linux-6.3.1
+.mkstate.sexpr
+init/bootstrap
+bootable_iso.iso
+usr
