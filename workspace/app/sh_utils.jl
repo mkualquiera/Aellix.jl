@@ -1,7 +1,5 @@
 
-module OsUtils
-
-function ls(p::String)::Vector{Base.Filesystem.StatStruct}
+function ls(p::S)::Vector{Base.Filesystem.StatStruct} where {S<:AbstractString}
     if isdir(p)
         return stat.((x->joinpath(p,x)).(readdir(p)))
     else
@@ -11,6 +9,10 @@ end
 
 
 function Main.aellshow(io::IO, M::MIME"text/plain", x::Vector{Base.Filesystem.StatStruct})
+    println(io, "$(length(x)) entries")
+    if length(x) == 0
+        return
+    end
     # Sort by mode
     x = sort(x, by=x->x.mode)
     # show permissions, size, modification time, and name
@@ -27,8 +29,8 @@ function Main.aellshow(io::IO, M::MIME"text/plain", x::Vector{Base.Filesystem.St
 
     col_lens = (x->maximum(length.(x))).(eachcol(alldata))
 
-    padded = [ rpad(alldata[i,j], col_lens[j]) for i in 1:size(alldata,1), 
-        j in 1:size(alldata,2) ]
+    padded = [ rpad(alldata[i,j], col_lens[j]) for i in axes(alldata,1), 
+        j in axes(alldata,2) ]
 
     # Print
     for row in eachrow(padded)
@@ -36,4 +38,31 @@ function Main.aellshow(io::IO, M::MIME"text/plain", x::Vector{Base.Filesystem.St
     end
 end
 
+
+"""
+    ls()
+
+List the contents of the current directory.
+"""
+ls() = ls(pwd())
+
+struct ClearScreen end
+
+"""
+    clear()
+
+Clear the screen.
+"""
+clear() = ClearScreen()
+
+function Main.aellshow(io::IO, M::MIME"text/plain", x::ClearScreen)
+    print(io,"\033[2J")
+    print(io,"\x1b[H")
 end
+
+"""
+    echo(any)
+
+Print the argument to the screen.
+"""
+echo(x) = x

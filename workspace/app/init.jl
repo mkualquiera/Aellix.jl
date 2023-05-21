@@ -12,6 +12,10 @@ include("/lib/system.jl")
 Main function for initializing the operating system.
 """
 function init()
+    # If INITIALIZED is set, nothing to do
+    if haskey(ENV, "INITIALIZED") && ENV["INITIALIZED"] == "1"
+        return
+    end
 
     # If TERM isn't set, set it and call recursively
     if ENV["TERM"] == "linux"
@@ -21,6 +25,7 @@ function init()
         @info "Setting environment variables..."
         ENV["TERM"] = "xterm"
         ENV["HOME"] = "/home"
+        ENV["PATH"] = "/app"
         run(`/usr/bin/julia /app/init.jl`)
         return
     end
@@ -28,6 +33,8 @@ function init()
     @info "Mounting blocks..."
     # Mount /home as tmpfs
     System.mount("tmpfs", "/home", "tmpfs", UInt32(0), C_NULL)
+
+    ENV["INITIALIZED"] = "1"
 
     @info "Running init.d scripts..."
     for script in readdir("/etc/init.d")

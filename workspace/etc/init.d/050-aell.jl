@@ -4,8 +4,7 @@ function init_aell()
     banner = read("/share/banner.txt", String)
     #println(banner)
     println(Base.text_colors[:normal])
-    Core.eval(Main,:(include("/lib/Acorn/Acorn.jl")))
-    Core.eval(Main,:(include("/lib/os_utils.jl")))
+    #Core.eval(Main, :(include("/lib/Acorn/Acorn.jl")))
     while true
         try
             Aell.run()
